@@ -1,3 +1,4 @@
+package polsl.tpdia;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -12,7 +13,9 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.math.stat.descriptive.summary.Sum;
 
-public class HelloWorld {
+import polsl.tpdia.models.RawPrimaryData;
+
+public class FuelStationGenerator {
 
 
 	public static void main(String[] args) throws ParseException {
@@ -24,7 +27,7 @@ public class HelloWorld {
 		till.set(2014, 4, 10, 24, 0);
 
 		
-		Map<Calendar,Double> measures = generator.Generate(from,till);
+		ArrayList<RawPrimaryData> measures = generator.Generate(from,till);
 		
 		
 	}
