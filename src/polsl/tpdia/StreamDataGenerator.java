@@ -17,6 +17,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.math.stat.descriptive.summary.Sum;
 
 import polsl.tpdia.models.AggregatedNozzleData;
+import polsl.tpdia.models.AggregatedTankData;
 import polsl.tpdia.models.RawPrimaryData;
 
 
@@ -110,12 +111,16 @@ public class StreamDataGenerator {
 		int aggergationStep = (int) (aggregationInterval/interval);
 		
 		NozzleDataHandler nozzleDataHandler = new NozzleDataHandler(aggregationInterval);
-		
 		List<AggregatedNozzleData> aggregatedData = nozzleDataHandler.aggregateNozzleData(aggergationStep,calculatedTankedValues,(Calendar)dateFrom.clone(),nozzleId,tankId,5d);
 		
-		for(AggregatedNozzleData data : aggregatedData){
+                TankDataHandler tankDataHandler = new TankDataHandler();
+                List<AggregatedTankData> aggregatedTankData = tankDataHandler.aggregateTankData(aggregatedData);
+                
+		for(AggregatedNozzleData data : aggregatedData)
 			data.printToConsole();
-		}
+                
+                for(AggregatedTankData data : aggregatedTankData)
+			data.printToConsole();
 		
 		return rawData;
 	}

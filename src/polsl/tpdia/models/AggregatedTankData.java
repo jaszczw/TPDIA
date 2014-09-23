@@ -25,7 +25,7 @@ public class AggregatedTankData {
 		System.out.println(TankId + " " + DatePoint + " " +RawGasolineVolume + " " +RawWaterVolume + " " + Temperature);
                 
                 CSVWriter tankMeasures = new CSVWriter(new FileWriter("TankMeasures.csv", true), ';');
-                String[] entries = (TankId + "#" + DatePoint + "#" +RawGasolineVolume + "#" +RawWaterVolume + "##" + Temperature).split("#");
+                String[] entries = (TankId + "#" + DatePoint + "#" +RawGasolineVolume + "##" +RawWaterVolume + "#" + Temperature).split("#");
                 tankMeasures.writeNext(entries);
                 tankMeasures.close();
 	}
