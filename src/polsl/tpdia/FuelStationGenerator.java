@@ -1,4 +1,5 @@
 package polsl.tpdia;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import polsl.tpdia.models.RawPrimaryData;
 public class FuelStationGenerator {
 
 
-	public static void main(String[] args) throws ParseException {
+	public static void main(String[] args) throws ParseException, IOException {
 		StreamDataGenerator generator = new StreamDataGenerator();
 		
 		Calendar from = Calendar.getInstance();

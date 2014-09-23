@@ -1,4 +1,8 @@
 package polsl.tpdia;
+import au.com.bytecode.opencsv.CSVWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -55,13 +59,17 @@ public class StreamDataGenerator {
 	}
 	
 	
-	public ArrayList<RawPrimaryData> Generate(Calendar dateFrom, Calendar dateTo){
+	public ArrayList<RawPrimaryData> Generate(Calendar dateFrom, Calendar dateTo) throws IOException{
 		Calendar startingPoint = (Calendar) dateFrom.clone();
 		Random randomGenerator = new Random();
 //		Map<Date,Double> dict =  new HashMap<Date, Double>();
 		ArrayList<Double> values = new ArrayList<Double>();
 		ArrayList<RawPrimaryData> rawData = new ArrayList<RawPrimaryData>();
 		
+                CSVWriter nozzleMeasures = new CSVWriter(new FileWriter("NozzleMeasures.csv"), ';');
+                nozzleMeasures.close();
+                CSVWriter tankMeasures = new CSVWriter(new FileWriter("TankMeasures.csv"), ';');
+                tankMeasures.close();
 
 		Double amountOfFuelInTick= interval/msTimeFor1l;
 		Double valueToTank = 0d;

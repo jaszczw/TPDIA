@@ -1,5 +1,11 @@
 package polsl.tpdia.models;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
+
+import au.com.bytecode.opencsv.CSVWriter;
 
 
 	
@@ -22,7 +28,13 @@ import java.util.Date;
 		public double Temperature;
 		
 		
-		public void printToConsole(){
-			System.out.println(NozzleId + " " + TankId + " " +DateFrom + " " +DateTo + " " +ValueRaw + " " +Temperature);
+		public void printToConsole() throws FileNotFoundException, IOException{
+			System.out.println(NozzleId + " | " + TankId + " | " +DateFrom + " | " +DateTo + " | " +ValueRaw + " | " +Temperature);
+                        
+                        CSVWriter nozzleMeasures = new CSVWriter(new FileWriter("NozzleMeasures.csv", true), ';');
+                        String[] entries = (NozzleId + "#" + TankId + "#" +DateFrom + "#" +DateTo + "#" +ValueRaw + "###" +Temperature).split("#");
+                        nozzleMeasures.writeNext(entries);
+                        nozzleMeasures.close();
+                        
 		}
 	}
