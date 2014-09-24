@@ -22,12 +22,24 @@ import polsl.tpdia.models.RawPrimaryData;
 public class FuelStationGenerator {
 
 	public static void main(String[] args) throws ParseException, IOException {
-		StreamDataGenerator generator = new StreamDataGenerator();
+		
+		
+		int rawDataInterval = 5000; //5s
+		int nozzleAggInterval = 900000; //15min
+		int tankAggInterval = 240000; //4min
+		
+		if(args.length==3){
+			rawDataInterval = Integer.parseInt(args[0]);
+			nozzleAggInterval = Integer.parseInt(args[1]);
+			tankAggInterval = Integer.parseInt(args[2]);
+		}
+		
+		StreamDataGenerator generator = new StreamDataGenerator(rawDataInterval, nozzleAggInterval, tankAggInterval);
 
 		Calendar from = Calendar.getInstance();
-		from.set(2014, 4, 10, 0, 0);
+		from.set(2014, 4, 10, 0, 0, 0);
 		Calendar till = Calendar.getInstance();
-		till.set(2014, 4, 10, 24, 0);
+		till.set(2014, 4, 10, 24, 0, 0);
 
 		//Clear Files before saving
 		CSVWriter nozzleMeasures = new CSVWriter(new FileWriter(
@@ -37,8 +49,7 @@ public class FuelStationGenerator {
 				"TankMeasures.csv"), ';');
 		tankMeasures.close();
 
-		ArrayList<RawPrimaryData> measures = generator.Generate(from, till);
-
+		generator.Generate(from, till);
 	}
 
 	public static Double aggregateValues(Set<Double> doubles) {

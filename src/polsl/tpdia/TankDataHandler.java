@@ -14,10 +14,12 @@ public class TankDataHandler {
     
     public double tankVolume = 7.5;
 	public double oneLtoFuelHeightProportion = 0.000379552d;
+	private int interval = 48; // 4minutes
 	
-	public TankDataHandler(){
+	public TankDataHandler(int interval){
 		Random rand =new Random();
 		tankVolume = rand.nextGaussian()*2 + 7.5;
+		this.interval = interval;
 	}
 
     public List<AggregatedTankData> aggregateTankData(List<RawPrimaryData> rawData) {
@@ -35,7 +37,7 @@ public class TankDataHandler {
             
             
             // measures made every 4 minutes - 5 seconds interval
-            if (((i + 1) % 48 == 0) || (i == rawData.size() - 1)) {
+            if (((i + 1) % interval == 0) || (i == rawData.size() - 1)) {
                 int tankId = rawData.get(i).TankId;
                 Date datePoint = rawData.get(i).PointInTime;
                 rawGasolineVolume -= tankedVolume;
