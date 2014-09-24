@@ -9,7 +9,8 @@ import polsl.tpdia.models.AggregatedTankData;
 
 public class TankDataHandler {
     
-    public int tankVolume = 10000;
+    public double tankVolume = 7.5;
+	public double oneLtoFuelHeightProportion = 0.000379552d;
 
     public List<AggregatedTankData> aggregateTankData(List<AggregatedNozzleData> aggregatedNozzleData) {
         List<AggregatedTankData> aggregations = new ArrayList<AggregatedTankData>();
@@ -18,7 +19,7 @@ public class TankDataHandler {
         double tankedVolume = 0;
         
         for (int i = 0; i<aggregatedNozzleData.size(); i+=1) {
-            tankedVolume += aggregatedNozzleData.get(i).ValueRaw;
+            tankedVolume += aggregatedNozzleData.get(i).ValueRaw*oneLtoFuelHeightProportion;
             
             // measures maked every 2 hours
             if (((i + 1) % 8 == 0) || (i == aggregatedNozzleData.size() - 1)) {
