@@ -1,4 +1,5 @@
 package polsl.tpdia;
+
 import au.com.bytecode.opencsv.CSVWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,110 +21,85 @@ import polsl.tpdia.models.AggregatedNozzleData;
 import polsl.tpdia.models.AggregatedTankData;
 import polsl.tpdia.models.RawPrimaryData;
 
-
 public class StreamDataGenerator {
-	public Long deviationTimeToNextClient = 60l;
-	public Long meanTimeToNextClient = 60l;
-	public Long deviationAmountToTank = 15l;
-	public Long meanAmountToTank = 35l;
-	public Double msTimeFor1l = 1800d; 	// 1l/1.8s
+
+	public Double msTimeFor1l = 1800d; // 1l/1.8s
 	public Integer interval = 5000; // 5s
 	public int aggregationInterval = 900000; // 15min
-	public Long minuteToMs = 60000l;
 	public double oneLtoFuelHeightProportion = 0.000379552d;
 	public int tankId = 9650;
 	public int nozzleId = 1640;
-	
-	
-	
-	public StreamDataGenerator(){
-		
+	public Randomizers randomizer;
+
+	public StreamDataGenerator() {
+		randomizer = new Randomizers();
 	}
 
-	public Double getRandValueToTankInL(Random randomGenerator) {
-		return randomGenerator.nextGaussian() * deviationAmountToTank
-				+ meanAmountToTank;
-	}
-
-	public Double nextTankInMs(Random randomGenerator) {
-		return (randomGenerator.nextGaussian() * deviationTimeToNextClient
-				+ meanTimeToNextClient) * minuteToMs;
-	}
-	
-	
-	public double getWaterHeight(Random randomGenerator) {
-		double returnValue =  Math.max(randomGenerator.nextGaussian() -4.4 ,0)/100;
-		if (returnValue>0){
-			System.out.println(returnValue);
-		}
-		return returnValue;
-	}
-	
-	
-	public ArrayList<RawPrimaryData> Generate(Calendar dateFrom, Calendar dateTo) throws IOException{
+	public ArrayList<RawPrimaryData> Generate(Calendar dateFrom, Calendar dateTo)
+			throws IOException {
 		Calendar startingPoint = (Calendar) dateFrom.clone();
 		Random randomGenerator = new Random();
-//		Map<Date,Double> dict =  new HashMap<Date, Double>();
+		// Map<Date,Double> dict = new HashMap<Date, Double>();
 		ArrayList<Double> values = new ArrayList<Double>();
 		ArrayList<RawPrimaryData> rawData = new ArrayList<RawPrimaryData>();
-		
-                CSVWriter nozzleMeasures = new CSVWriter(new FileWriter("NozzleMeasures.csv"), ';');
-                nozzleMeasures.close();
-                CSVWriter tankMeasures = new CSVWriter(new FileWriter("TankMeasures.csv"), ';');
-                tankMeasures.close();
 
-		Double amountOfFuelInTick= interval/msTimeFor1l;
+		Double amountOfFuelInTick = interval / msTimeFor1l;
 		Double valueToTank = 0d;
-		 //Diff of time of period to generate divided by interval that data are taken
-		Long ticksAmount = (dateTo.getTimeInMillis() - startingPoint.getTimeInMillis())
-				/ interval;
-		Double nextTank = nextTankInMs(randomGenerator);
 		
-		for (Integer i = 0; i < ticksAmount; i++, nextTank -= interval, startingPoint.add(Calendar.MILLISECOND, interval)) {
+		// Diff of time of period to generate divided by interval that data are taken
+		Long ticksAmount = (dateTo.getTimeInMillis() - startingPoint
+				.getTimeInMillis()) / interval;
+		Double nextTank = randomizer.nextTankInMs(randomGenerator);
+
+		for (Integer i = 0; i < ticksAmount; i++, nextTank -= interval, startingPoint
+				.add(Calendar.MILLISECOND, interval)) {
 			Date pointInTime = startingPoint.getTime();
-			
-			if (nextTank <= 0 && valueToTank<=0) {
-				valueToTank = Math.max(0,getRandValueToTankInL(randomGenerator));
-				nextTank = nextTankInMs(randomGenerator);
+
+			if (nextTank <= 0 && valueToTank <= 0) {
+				valueToTank = Math.max(0,
+						randomizer.getRandValueToTankInL(randomGenerator));
+				nextTank = randomizer.nextTankInMs(randomGenerator);
 			}
-			
-			
+
 			double tankedValue = Math.min(amountOfFuelInTick, valueToTank);
-			valueToTank-= tankedValue;
-			
-//			System.out.println(tankedValue + " \t" + pointInTime);
-//			dict.put(pointInTime, tankedValue);
-			values.add(tankedValue);
-			RawPrimaryData rawPoint = new RawPrimaryData(tankId,nozzleId, pointInTime,tankedValue,tankedValue*oneLtoFuelHeightProportion,getWaterHeight(randomGenerator));
-			
+			valueToTank -= tankedValue;
+
+//			values.add(tankedValue);
+			RawPrimaryData rawPoint = new RawPrimaryData(tankId, nozzleId,
+					pointInTime, tankedValue, tankedValue
+							* oneLtoFuelHeightProportion,
+							randomizer.getWaterHeight(randomGenerator),randomizer.getTemperature(randomGenerator));
+
 			rawData.add(rawPoint);
 		}
-		
-		
-		for(RawPrimaryData data : rawData){
-			System.out.println(data.RawFuelNozzleAmount  + " " + data.PointInTime + " " + data.RawFuelVolume +  " "  + data.RawWaterVolume);
-		}
-		
-		
-		double[] calculatedTankedValues = ArrayUtils.toPrimitive(values.toArray(new Double[values.size()]));
 
-		
-		int aggergationStep = (int) (aggregationInterval/interval);
-		
-		NozzleDataHandler nozzleDataHandler = new NozzleDataHandler(aggregationInterval);
-		List<AggregatedNozzleData> aggregatedData = nozzleDataHandler.aggregateNozzleData(aggergationStep,calculatedTankedValues,(Calendar)dateFrom.clone(),nozzleId,tankId,5d);
-		
-                TankDataHandler tankDataHandler = new TankDataHandler();
-                List<AggregatedTankData> aggregatedTankData = tankDataHandler.aggregateTankData(aggregatedData);
-                
-		for(AggregatedNozzleData data : aggregatedData)
+//		for (RawPrimaryData data : rawData) {
+//			System.out.println(data.RawFuelNozzleAmount + " "
+//					+ data.PointInTime + " " + data.RawFuelVolume + " "
+//					+ data.RawWaterVolume);
+//		}
+
+//		double[] calculatedTankedValues = ArrayUtils.toPrimitive(values
+//				.toArray(new Double[values.size()]));
+
+		int aggergationStep = (int) (aggregationInterval / interval);
+
+		NozzleDataHandler nozzleDataHandler = new NozzleDataHandler(
+				aggregationInterval);
+		List<AggregatedNozzleData> aggregatedData = nozzleDataHandler
+				.aggregateNozzleData(aggergationStep, rawData, (Calendar) dateFrom.clone());
+
+		TankDataHandler tankDataHandler = new TankDataHandler();
+		List<AggregatedTankData> aggregatedTankData = tankDataHandler
+				.aggregateTankData(rawData);
+
+		for (AggregatedNozzleData data : aggregatedData)
 			data.printToConsole();
-                
-                for(AggregatedTankData data : aggregatedTankData)
+
+		for (AggregatedTankData data : aggregatedTankData)
 			data.printToConsole();
-		
+
 		return rawData;
 	}
 
-	
 }
