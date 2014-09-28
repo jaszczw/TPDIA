@@ -27,25 +27,18 @@ public class TankDataHandler {
         
         double rawGasolineVolume = tankVolume;
         double tankedVolume = 0;
-        double meanTemperature = 0;
-        double waterHeight = 0;
         
         for (int i = 0; i<rawData.size(); i+=1) {
             tankedVolume += rawData.get(i).RawFuelVolume;
-            meanTemperature +=rawData.get(i).Temperature;
-            waterHeight +=rawData.get(i).RawWaterVolume; 
-            
             
             // measures made every 4 minutes - 5 seconds interval
             if (((i + 1) % interval == 0) || (i == rawData.size() - 1)) {
                 int tankId = rawData.get(i).TankId;
                 Date datePoint = rawData.get(i).PointInTime;
                 rawGasolineVolume -= tankedVolume;
-                AggregatedTankData aggregation = new AggregatedTankData(tankId, datePoint, rawGasolineVolume, waterHeight, meanTemperature/48);
+                AggregatedTankData aggregation = new AggregatedTankData(tankId, datePoint, rawGasolineVolume, rawData.get(i).RawWaterVolume, rawData.get(i).Temperature);
                 aggregations.add(aggregation);
             	tankedVolume=0;
-            	meanTemperature=0;
-            	waterHeight=0;
             }
         }
         

@@ -45,7 +45,7 @@ public class StreamDataGenerator {
 		// taken
 		Long ticksAmount = (dateTo.getTimeInMillis() - startingPoint
 				.getTimeInMillis()) / interval;
-		Double nextTank = randomizer.nextTankInMs(randomGenerator);
+		Long nextTank = randomizer.nextTankInMs(randomGenerator);
 
 		for (Integer i = 0; i < ticksAmount; i++, nextTank -= interval, startingPoint
 				.add(Calendar.MILLISECOND, interval)) {
