@@ -3,12 +3,15 @@ package polsl.tpdia.models;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
+
+/**
+ * Class representing one row of aggregated Nozzle Data
+ */
 public class AggregatedNozzleData {
 	public AggregatedNozzleData(int nozzleId, int tankId, Date aggStart,
 			Date aggEnd, double rawValue, double temperature) {
@@ -27,7 +30,12 @@ public class AggregatedNozzleData {
 	public double ValueRaw;
 	public double Temperature;
 
-	public void printToConsole() throws FileNotFoundException, IOException {
+	/**
+	 * Appends aggregation file with data from object
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void printToFile() throws FileNotFoundException, IOException {
 		System.out.println(NozzleId + " | " + TankId + " | " + DateFrom + " | "
 				+ DateTo + " | " + ValueRaw + " | " + Temperature);
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(

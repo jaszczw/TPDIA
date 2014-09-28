@@ -2,6 +2,13 @@ package polsl.tpdia.models;
 
 import java.util.Date;
 
+
+/**
+ * Class representing one row of generated Data it has highest granularity, 
+ * as all aggregations are made from data contained here.
+ * 
+ * Amount, and Volume data store difference to last measured (generated), data
+ */
 public class RawPrimaryData {
 	public RawPrimaryData(int tankId, int nozzleId, Date pointInTime, double rawFuelNozzleAmount,
 			double rawFuelVolume, double rawWaterVolume, double temperature) {
@@ -15,7 +22,7 @@ public class RawPrimaryData {
 	}
 
 	public Date PointInTime;
-	public double RawFuelVolume; //diff - need to add starting level
+	public double RawFuelVolume;
 	public double RawWaterVolume;
 	public double RawFuelNozzleAmount;
 	public double Temperature;

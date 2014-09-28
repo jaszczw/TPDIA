@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import polsl.tpdia.models.AggregatedNozzleData;
 import polsl.tpdia.models.AggregatedTankData;
 import polsl.tpdia.models.RawPrimaryData;
 
+
+/**
+ * Main class for generating aggregations and raw data
+ * Contains method for generating and saving to a file fuel station data.
+ */
 public class StreamDataGenerator {
 
 	public Double msTimeFor1l = 1800d; // 1l/1.8s
@@ -31,10 +35,10 @@ public class StreamDataGenerator {
 		this.tankAggregationInterval = tankAggregationInterval;
 	}
 
+	///Generates and aggregated Fuel Station Data
 	public ArrayList<RawPrimaryData> Generate(Calendar dateFrom, Calendar dateTo)
 			throws IOException {
 		Calendar startingPoint = (Calendar) dateFrom.clone();
-		Random randomGenerator = new Random();
 
 		ArrayList<RawPrimaryData> rawData = new ArrayList<RawPrimaryData>();
 
@@ -45,7 +49,7 @@ public class StreamDataGenerator {
 		// taken
 		Long ticksAmount = (dateTo.getTimeInMillis() - startingPoint
 				.getTimeInMillis()) / interval;
-		Long nextTank = randomizer.nextTankInMs(randomGenerator);
+		Long nextTank = randomizer.nextTankInMs();
 
 		for (Integer i = 0; i < ticksAmount; i++, nextTank -= interval, startingPoint
 				.add(Calendar.MILLISECOND, interval)) {
@@ -53,8 +57,8 @@ public class StreamDataGenerator {
 
 			if (nextTank <= 0 && valueToTank <= 0) {
 				valueToTank = Math.max(0,
-						randomizer.getRandValueToTankInL(randomGenerator));
-				nextTank = randomizer.nextTankInMs(randomGenerator);
+						randomizer.getRandValueToTankInL());
+				nextTank = randomizer.nextTankInMs();
 			}
 
 			double tankedValue = Math.min(amountOfFuelInTick, valueToTank);
@@ -63,8 +67,8 @@ public class StreamDataGenerator {
 			RawPrimaryData rawPoint = new RawPrimaryData(tankId, nozzleId,
 					pointInTime, tankedValue, tankedValue
 							* oneLtoFuelHeightProportion,
-					randomizer.getWaterHeight(randomGenerator),
-					randomizer.getTemperature(randomGenerator));
+					randomizer.getWaterHeight(),
+					randomizer.getTemperature());
 
 			rawData.add(rawPoint);
 		}
@@ -82,10 +86,10 @@ public class StreamDataGenerator {
 				.aggregateTankData(rawData);
 
 		for (AggregatedNozzleData data : aggregatedData)
-			data.printToConsole();
+			data.printToFile();
 
 		for (AggregatedTankData data : aggregatedTankData)
-			data.printToConsole();
+			data.printToFile();
 
 		return rawData;
 	}

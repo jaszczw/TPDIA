@@ -5,9 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.math.stat.descriptive.summary.Sum;
-
 import polsl.tpdia.models.AggregatedNozzleData;
 import polsl.tpdia.models.RawPrimaryData;
 
@@ -18,6 +15,13 @@ public class NozzleDataHandler {
 	
 	public int AggregationInterval;
 	
+	/***
+	 * Method returns aggregations of Generated data with settings passed to it
+	 * @param step - Amount of Primary data aggregated into one in each step
+	 * @param rawData - List of Generated Primary data
+	 * @param startingPoint
+	 * @return Aggregated Data
+	 */
 	public List<AggregatedNozzleData> aggregateNozzleData(int step,ArrayList<RawPrimaryData> rawData, Calendar startingPoint){
 		List<AggregatedNozzleData> aggregations = new ArrayList<AggregatedNozzleData>();
 		

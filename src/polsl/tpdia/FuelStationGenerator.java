@@ -2,22 +2,11 @@ package polsl.tpdia;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.math.stat.descriptive.summary.Sum;
-
 import au.com.bytecode.opencsv.CSVWriter;
-import polsl.tpdia.models.RawPrimaryData;
 
 public class FuelStationGenerator {
 
@@ -28,6 +17,7 @@ public class FuelStationGenerator {
 		int nozzleAggInterval = 900000; //15min
 		int tankAggInterval = 240000; //4min
 		
+		//Set parameters from args
 		if(args.length==3){
 			rawDataInterval = Integer.parseInt(args[0]);
 			nozzleAggInterval = Integer.parseInt(args[1]);

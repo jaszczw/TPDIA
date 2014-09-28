@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import polsl.tpdia.models.AggregatedNozzleData;
 import polsl.tpdia.models.AggregatedTankData;
 import polsl.tpdia.models.RawPrimaryData;
 
@@ -22,21 +21,28 @@ public class TankDataHandler {
 		this.interval = interval;
 	}
 
+	/**
+	 * Aggregates generated data into AggregatedTankData Records
+	 * @param rawData - records generated 
+	 * @return list of aggregated records.
+	 */
     public List<AggregatedTankData> aggregateTankData(List<RawPrimaryData> rawData) {
         List<AggregatedTankData> aggregations = new ArrayList<AggregatedTankData>();
         
         double rawGasolineVolume = tankVolume;
         double tankedVolume = 0;
+        double waterVolume = 0;
         
         for (int i = 0; i<rawData.size(); i+=1) {
             tankedVolume += rawData.get(i).RawFuelVolume;
+            waterVolume += rawData.get(i).RawWaterVolume;
             
-            // measures made every 4 minutes - 5 seconds interval
+            //Interval - amount of primarty records taken into one aggregation
             if (((i + 1) % interval == 0) || (i == rawData.size() - 1)) {
                 int tankId = rawData.get(i).TankId;
                 Date datePoint = rawData.get(i).PointInTime;
                 rawGasolineVolume -= tankedVolume;
-                AggregatedTankData aggregation = new AggregatedTankData(tankId, datePoint, rawGasolineVolume, rawData.get(i).RawWaterVolume, rawData.get(i).Temperature);
+                AggregatedTankData aggregation = new AggregatedTankData(tankId, datePoint, rawGasolineVolume, waterVolume, rawData.get(i).Temperature);
                 aggregations.add(aggregation);
             	tankedVolume=0;
             }
